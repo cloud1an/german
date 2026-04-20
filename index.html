@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deutsch Alltag — Günlük Almanca</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="flag" aria-hidden="true">🇩🇪</span>
+        <div>
+          <h1>Deutsch Alltag</h1>
+          <p class="tagline">Günlük Almanca · Intensiv öğrenme (A1–B2)</p>
+        </div>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Tema değiştir">🌙</button>
+    </div>
+    <nav class="view-tabs container">
+      <button class="view-tab active" data-view="study">📚 Öğren</button>
+      <button class="view-tab" data-view="grammar">📖 Gramer</button>
+      <button class="view-tab" data-view="verbs">🔤 Fiiller</button>
+      <button class="view-tab" data-view="exam">📝 Sınav</button>
+      <button class="view-tab" data-view="browse">🔍 Gözat</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- ÖĞREN GÖRÜNÜMÜ -->
+    <section id="study-view" class="view">
+      <!-- Anasayfa -->
+      <div id="study-home">
+        <div id="resume-box" class="resume-box" hidden>
+          <div class="resume-text">
+            <div class="resume-title">⏸ Yarım kalan oturum var</div>
+            <div class="resume-meta"><span id="resume-progress">0 / 0</span> · <span id="resume-level">A1</span></div>
+          </div>
+          <div class="resume-actions">
+            <button id="resume-btn" class="primary-btn">▶ Devam Et</button>
+            <button id="discard-btn" class="text-btn">Sıfırla</button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-num" id="stat-streak">0</div><div class="stat-label">🔥 Seri</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-due">0</div><div class="stat-label">Bekleyen</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-new">0</div><div class="stat-label">Yeni</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-today">0</div><div class="stat-label">Bugün</div></div>
+        </div>
+
+        <div class="setting-block">
+          <p class="setting-label">Seviye</p>
+          <div class="study-level-row">
+            <button class="study-level-btn active" data-level="A1">A1</button>
+            <button class="study-level-btn" data-level="A2">A2</button>
+            <button class="study-level-btn" data-level="B1">B1</button>
+            <button class="study-level-btn" data-level="B2">B2</button>
+            <button class="study-level-btn" data-level="ALL">Karışık</button>
+          </div>
+        </div>
+
+        <div class="setting-block">
+          <p class="setting-label">Gün başına yeni kart</p>
+          <div class="study-level-row">
+            <button class="study-new-btn" data-new="10">10</button>
+            <button class="study-new-btn active" data-new="15">15</button>
+            <button class="study-new-btn" data-new="25">25</button>
+            <button class="study-new-btn" data-new="40">40</button>
+          </div>
+        </div>
+
+        <div class="start-row">
+          <button id="start-session-btn" class="big-start-btn">▶ Oturuma Başla</button>
+          <button id="quick-session-btn" class="quick-btn" title="5 kartlık hızlı tekrar">⚡ 5</button>
+        </div>
+
+        <div class="progress-block">
+          <h3>İlerleme</h3>
+          <div id="progress-levels"></div>
+        </div>
+
+        <div class="footer-actions">
+          <button id="reset-progress-btn" class="text-btn">İlerlemeyi Sıfırla</button>
+        </div>
+      </div>
+
+      <!-- Oturum -->
+      <div id="study-session" hidden>
+        <div class="session-top">
+          <div class="progress-bar session-progress">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <span class="progress-text" id="progress-text">0 / 0</span>
+          <span class="mode-tag" id="mode-tag"></span>
+          <button id="cancel-session-btn" class="icon-btn" aria-label="Oturumu bitir">✕</button>
+        </div>
+
+        <div id="card-box" class="card-box"></div>
+
+        <div id="card-actions" class="card-actions"></div>
+
+        <div id="grade-buttons" class="grade-buttons" hidden>
+          <button class="grade-btn again" data-quality="0">
+            <span class="grade-key">1</span><span>Tekrar</span><small>&lt;1dk</small>
+          </button>
+          <button class="grade-btn hard" data-quality="1">
+            <span class="grade-key">2</span><span>Zor</span><small>kısa</small>
+          </button>
+          <button class="grade-btn good" data-quality="2">
+            <span class="grade-key">3</span><span>İyi</span><small>normal</small>
+          </button>
+          <button class="grade-btn easy" data-quality="3">
+            <span class="grade-key">4</span><span>Kolay</span><small>uzun</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bitiş -->
+      <div id="study-done" hidden>
+        <div class="done-box">
+          <div class="done-icon">🎉</div>
+          <h2>Oturum tamam!</h2>
+          <div class="done-stats">
+            <div><span id="done-total">0</span><small>kart</small></div>
+            <div><span id="done-correct">0</span><small>doğru</small></div>
+            <div><span id="done-accuracy">0%</span><small>başarı</small></div>
+            <div><span id="done-time">0 dk</span><small>süre</small></div>
+          </div>
+          <div class="done-actions">
+            <button id="continue-btn" class="big-start-btn">Devam Et</button>
+            <button id="home-btn" class="text-btn">Ana Sayfa</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GRAMER GÖRÜNÜMÜ -->
+    <section id="grammar-view" class="view" hidden>
+      <div class="grammar-levels">
+        <button class="grammar-level-btn active" data-level="A1">A1</button>
+        <button class="grammar-level-btn" data-level="A2">A2</button>
+        <button class="grammar-level-btn" data-level="B1">B1</button>
+        <button class="grammar-level-btn" data-level="B2">B2</button>
+      </div>
+      <div id="grammar-content" class="grammar-content"></div>
+    </section>
+
+    <!-- SINAV GÖRÜNÜMÜ -->
+    <section id="exam-view" class="view" hidden>
+      <div class="exam-levels">
+        <button class="exam-level-btn active" data-level="A1">A1</button>
+        <button class="exam-level-btn" data-level="A2">A2</button>
+        <button class="exam-level-btn" data-level="B1">B1</button>
+        <button class="exam-level-btn" data-level="B2">B2</button>
+      </div>
+      <div class="exam-sections">
+        <button class="exam-section-btn active" data-section="overview">📋 Format</button>
+        <button class="exam-section-btn" data-section="lesen">📖 Lesen</button>
+        <button class="exam-section-btn" data-section="hoeren">👂 Hören</button>
+        <button class="exam-section-btn" data-section="schreiben">✍️ Schreiben</button>
+        <button class="exam-section-btn" data-section="sprechen">🗣️ Sprechen</button>
+      </div>
+      <div id="exam-content" class="exam-content"></div>
+    </section>
+
+    <!-- FİİLLER GÖRÜNÜMÜ -->
+    <section id="verbs-view" class="view" hidden>
+      <p class="verbs-intro">
+        Almanca'nın en sık kullanılan fiilleri. Perfekt için <strong>Partizip II</strong> + yardımcı fiil (haben/sein) kolonunu ezberle. Toplam <strong id="verb-count">—</strong> fiil.
+      </p>
+      <div class="verbs-filters">
+        <input type="search" id="verb-search" placeholder="Fiil ara (Almanca/Türkçe)…" />
+        <div class="verb-type-row">
+          <button class="verb-type-btn active" data-type="all">Tümü</button>
+          <button class="verb-type-btn" data-type="auxiliary">Yardımcı</button>
+          <button class="verb-type-btn" data-type="modal">Modal</button>
+          <button class="verb-type-btn" data-type="irregular">Düzensiz</button>
+          <button class="verb-type-btn" data-type="regular">Düzenli</button>
+          <button class="verb-type-btn" data-type="separable">Ayrılabilen</button>
+        </div>
+      </div>
+      <div class="verb-table-wrap">
+        <table class="verb-table">
+          <thead>
+            <tr>
+              <th>Mastar</th>
+              <th>Präsens (er)</th>
+              <th>Präteritum</th>
+              <th>Partizip II</th>
+              <th>Türkçe</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="verb-tbody"></tbody>
+        </table>
+      </div>
+      <p id="verb-empty" class="empty-state" hidden>Fiil bulunamadı.</p>
+    </section>
+
+    <!-- GÖZAT GÖRÜNÜMÜ -->
+    <section id="browse-view" class="view" hidden>
+      <div class="controls">
+        <div class="levels" role="tablist" aria-label="Almanca seviyeleri">
+          <button class="level-btn active" data-level="A1" role="tab">A1 <span>Başlangıç</span></button>
+          <button class="level-btn" data-level="A2" role="tab">A2 <span>Temel</span></button>
+          <button class="level-btn" data-level="B1" role="tab">B1 <span>Orta</span></button>
+          <button class="level-btn" data-level="B2" role="tab">B2 <span>İyi</span></button>
+          <button class="level-btn favorites-btn" data-level="FAV" role="tab">★ <span>Favoriler</span></button>
+        </div>
+
+        <div class="search-wrap">
+          <input type="search" id="search" placeholder="Almanca veya Türkçe ara… (örn. Guten Tag, merhaba)" />
+        </div>
+
+        <p id="level-info" class="level-info"></p>
+
+        <div id="categories" class="categories" aria-label="Kategoriler"></div>
+      </div>
+
+      <section id="phrase-list" class="phrase-list" aria-live="polite"></section>
+      <p id="empty-state" class="empty-state" hidden>Sonuç bulunamadı.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Klavye: <strong>1–4</strong> seçenek/değerlendirme · <strong>Boşluk</strong> çevir · <strong>Enter</strong> gönder</p>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="grammar.js"></script>
+  <script src="verbs.js"></script>
+  <script src="exam.js"></script>
+  <script src="srs.js"></script>
+  <script src="study.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
