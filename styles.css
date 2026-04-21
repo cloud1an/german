@@ -122,6 +122,8 @@ html, body {
   z-index: 1000;
   backdrop-filter: blur(4px);
 }
+.welcome-modal[hidden] { display: none; }
+.welcome-users[hidden] { display: none; }
 .welcome-box {
   background: var(--surface);
   border-radius: var(--radius);
