@@ -16,7 +16,7 @@ const SRS = (() => {
 
   function load() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(Profile.namespace(STORAGE_KEY));
       if (raw) return JSON.parse(raw);
     } catch (e) {}
     return {
@@ -28,7 +28,7 @@ const SRS = (() => {
   }
 
   function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    localStorage.setItem(Profile.namespace(STORAGE_KEY), JSON.stringify(db));
   }
 
   function todayStr() {
@@ -239,7 +239,7 @@ const SRS = (() => {
 
   function resetAll() {
     if (confirm("Tüm ilerlemen silinecek. Emin misin?")) {
-      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(Profile.namespace(STORAGE_KEY));
       db = load();
       return true;
     }

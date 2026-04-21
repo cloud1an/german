@@ -77,16 +77,16 @@
       levels: session.levels,
       startedAt: session.startedAt
     };
-    localStorage.setItem(SESSION_KEY, JSON.stringify(data));
+    localStorage.setItem(Profile.namespace(SESSION_KEY), JSON.stringify(data));
   }
 
   function clearSavedSession() {
-    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(Profile.namespace(SESSION_KEY));
   }
 
   function loadSavedSession() {
     try {
-      const raw = localStorage.getItem(SESSION_KEY);
+      const raw = localStorage.getItem(Profile.namespace(SESSION_KEY));
       if (!raw) return null;
       const d = JSON.parse(raw);
       const queue = d.queueKeys

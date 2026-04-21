@@ -16,7 +16,13 @@
           <p class="tagline">Günlük Almanca · Intensiv öğrenme (A1–B2)</p>
         </div>
       </div>
-      <button id="theme-toggle" class="theme-toggle" aria-label="Tema değiştir">🌙</button>
+      <div class="header-right">
+        <button id="user-badge" class="user-badge" title="Kullanıcıyı değiştir">
+          <span class="user-icon">👤</span>
+          <span id="user-name-display" class="user-name">—</span>
+        </button>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Tema değiştir">🌙</button>
+      </div>
     </div>
     <nav class="view-tabs container">
       <button class="view-tab active" data-view="study">📚 Öğren</button>
@@ -224,12 +230,28 @@
     </section>
   </main>
 
+  <div id="welcome-modal" class="welcome-modal" hidden>
+    <div class="welcome-box">
+      <div class="welcome-flag">🇩🇪</div>
+      <h2 id="welcome-title">👋 Hoş geldin!</h2>
+      <p class="welcome-subtitle">İlerlemeni kaydetmek için bir kullanıcı adı seç. Şifre yok — bu cihazda saklanır.</p>
+      <input type="text" id="welcome-input" placeholder="örn. cloud1an" maxlength="30" autocomplete="off" />
+      <button id="welcome-submit" class="big-start-btn">Devam Et</button>
+      <p class="welcome-note">⚠️ İlerlemen sadece bu cihazda ve bu tarayıcıda saklanır. Başka cihazdan aynı adla girersen sıfırdan başlar.</p>
+      <div id="welcome-users" class="welcome-users" hidden>
+        <p class="welcome-users-label">Kayıtlı profiller:</p>
+        <div id="welcome-users-list"></div>
+      </div>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <div class="container">
       <p>Klavye: <strong>1–4</strong> seçenek/değerlendirme · <strong>Boşluk</strong> çevir · <strong>Enter</strong> gönder</p>
     </div>
   </footer>
 
+  <script src="profile.js"></script>
   <script src="data.js"></script>
   <script src="grammar.js"></script>
   <script src="verbs.js"></script>

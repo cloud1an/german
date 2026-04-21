@@ -2,7 +2,7 @@ const state = {
   level: "A1",
   category: "all",
   search: "",
-  favorites: JSON.parse(localStorage.getItem("german_favs") || "[]")
+  favorites: JSON.parse(localStorage.getItem(Profile.namespace("german_favs")) || "[]")
 };
 
 const levelInfo = {
@@ -17,7 +17,7 @@ const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
 function saveFavs() {
-  localStorage.setItem("german_favs", JSON.stringify(state.favorites));
+  localStorage.setItem(Profile.namespace("german_favs"), JSON.stringify(state.favorites));
 }
 
 function favKey(p) {
@@ -654,5 +654,63 @@ function renderGrammar(level) {
   });
 }
 
+function setupProfile() {
+  const modal = $("#welcome-modal");
+  const input = $("#welcome-input");
+  const submit = $("#welcome-submit");
+  const title = $("#welcome-title");
+  const usersBox = $("#welcome-users");
+  const usersList = $("#welcome-users-list");
+  const badge = $("#user-badge");
+  const nameDisplay = $("#user-name-display");
+
+  function refreshBadge() {
+    const u = Profile.current();
+    nameDisplay.textContent = u || "misafir";
+  }
+
+  function showModal(isSwitch) {
+    title.textContent = isSwitch ? "👤 Kullanıcı değiştir" : "👋 Hoş geldin!";
+    submit.textContent = isSwitch ? "Değiştir" : "Devam Et";
+    input.value = "";
+    const users = Profile.listUsers();
+    if (users.length > 0) {
+      usersBox.hidden = false;
+      usersList.innerHTML = "";
+      users.forEach(u => {
+        const b = document.createElement("button");
+        b.className = "welcome-user-btn";
+        b.textContent = u;
+        b.onclick = () => {
+          input.value = u;
+          submitName();
+        };
+        usersList.appendChild(b);
+      });
+    } else {
+      usersBox.hidden = true;
+    }
+    modal.hidden = false;
+    setTimeout(() => input.focus(), 50);
+  }
+
+  function submitName() {
+    const val = input.value.trim();
+    if (!val) { input.focus(); return; }
+    const previous = Profile.current();
+    Profile.set(val);
+    if (!previous) Profile.migrateBareKeysOnce(val);
+    location.reload();
+  }
+
+  submit.onclick = submitName;
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter") submitName(); });
+  badge.onclick = () => showModal(true);
+
+  refreshBadge();
+  if (!Profile.current()) showModal(false);
+}
+
+setupProfile();
 initEvents();
 render();
