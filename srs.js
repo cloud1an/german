@@ -84,6 +84,10 @@ const SRS = (() => {
     const t = now();
     const wasNew = card.state === "new";
     card.lastQuality = quality;
+    // En kötü grade'i (en düşük sayı = en zor) sticky olarak tut
+    if (card.worstQuality === undefined || quality < card.worstQuality) {
+      card.worstQuality = quality;
+    }
 
     if (quality === 0) {
       if (card.state === "review") {

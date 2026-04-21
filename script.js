@@ -142,10 +142,13 @@ function renderPhrases() {
     card.className = "phrase-card";
 
     const srsCard = SRS.getCard(p);
-    if (srsCard && srsCard.lastQuality !== undefined) {
+    // Önce worstQuality'yi göster (daha anlamlı — "bu kartta zorlandım" sinyali)
+    // Yoksa fallback: lastQuality (eski kartlar için)
+    const gradeIdx = srsCard?.worstQuality ?? srsCard?.lastQuality;
+    if (gradeIdx !== undefined) {
       const badge = document.createElement("span");
-      badge.className = "phrase-grade " + GRADE_CLASSES[srsCard.lastQuality];
-      badge.textContent = GRADE_LABELS[srsCard.lastQuality];
+      badge.className = "phrase-grade " + GRADE_CLASSES[gradeIdx];
+      badge.textContent = GRADE_LABELS[gradeIdx];
       card.appendChild(badge);
       card.classList.add("has-grade");
     }
