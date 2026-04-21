@@ -166,20 +166,16 @@ const SRS = (() => {
 
     due.sort((a, b) => a.c.due - b.c.due);
 
-    // Günlük kota kaldırıldı — her oturumda newPerDay kadar yeni kart
-    const shuffledNew = shuffle(newCards).slice(0, db.settings.newPerDay);
+    // Kullanıcının seçtiği sayı = TOPLAM oturum boyutu
+    // Önce due kartları (öncelik), sonra boşlukları yeni kartla doldur
+    const targetSize = limit || db.settings.newPerDay;
+    const reviewItems = due.slice(0, targetSize).map(x => ({ phrase: x.p, isNew: false }));
+    const remainingSlots = Math.max(0, targetSize - reviewItems.length);
+    const newItems = shuffle(newCards).slice(0, remainingSlots).map(p => ({ phrase: p, isNew: true }));
 
-    const queue = [];
-    due.forEach(x => queue.push({ phrase: x.p, isNew: false }));
-    shuffledNew.forEach(p => queue.push({ phrase: p, isNew: true }));
-
-    // Yeni ve tekrarı karıştır (yeni %30, tekrar %70 gibi)
-    const mixed = interleave(
-      queue.filter(q => !q.isNew),
-      queue.filter(q => q.isNew)
-    );
-
-    return limit ? mixed.slice(0, limit) : mixed;
+    // Due ve yeni karıştır (intercale)
+    const mixed = interleave(reviewItems, newItems);
+    return mixed;
   }
 
   function interleave(reviews, news) {
