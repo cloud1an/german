@@ -23,7 +23,7 @@ const SRS = (() => {
       cards: {},
       stats: { streak: 0, lastStudy: null, totalReviews: 0 },
       daily: { date: todayStr(), new: 0, reviews: 0, correct: 0, total: 0 },
-      settings: { newPerDay: 15, sessionSize: 20 }
+      settings: { newPerDay: 15 }
     };
   }
 

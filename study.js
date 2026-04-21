@@ -179,8 +179,8 @@
   }
 
   function startSession(customLimit) {
-    const limit = customLimit || SRS.countStatus(ALL_PHRASES).settings.sessionSize;
-    const q = SRS.buildQueue(ALL_PHRASES, session.levels, limit);
+    // customLimit: hızlı oturum (⚡5). Yoksa: kullanıcının seçtiği yeni kart sayısı + tüm due tekrarlar
+    const q = SRS.buildQueue(ALL_PHRASES, session.levels, customLimit || null);
     if (q.length === 0) {
       const status = SRS.countStatus(ALL_PHRASES);
       const lvlLabel = session.levels.join(", ");
