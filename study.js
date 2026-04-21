@@ -184,19 +184,14 @@
     if (q.length === 0) {
       const status = SRS.countStatus(ALL_PHRASES);
       const lvlLabel = session.levels.join(", ");
-      const dailyLimit = status.settings.newPerDay;
-      const doneToday = status.daily.new;
-      const remaining = Math.max(0, dailyLimit - doneToday);
       let msg = `${lvlLabel} seviyesinde şu an çalışılacak kart yok.\n\n`;
       msg += `Bekleyen tekrar: ${status.due}\n`;
-      msg += `Bugün kalan yeni kota: ${remaining} / ${dailyLimit}\n\n`;
-      if (remaining === 0) {
-        msg += "Bugün için yeni kart kotan doldu. Üstten limiti artırabilir veya yarın dönebilirsin.\n\n";
-      }
+      msg += `Seviyede toplam: ${Object.values(status.byLevel).reduce((a,b)=>a+b.total,0)}\n\n`;
+      msg += "Muhtemel sebep: Tüm kartlar öğrenildi ve gelecekteki tekrar için planlandı. SRS bu kartları uygun zamanda tekrar gösterecek.\n\n";
       msg += "Çözüm:\n";
-      msg += "• Üstten farklı seviye seç (A2/B1/B2/Karışık)\n";
-      msg += "• Yeni kart limitini artır (25 veya 40)\n";
-      msg += "• Tüm kartlar planlandıysa: ana sayfada 'İlerlemeyi Sıfırla'";
+      msg += "• Farklı seviye seç (A2/B1/B2/Karışık)\n";
+      msg += "• Biraz bekle, bekleyen tekrar dakikalar içinde geliyor\n";
+      msg += "• Hepsini sıfırdan başla: 'İlerlemeyi Sıfırla'";
       alert(msg);
       return;
     }

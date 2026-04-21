@@ -165,8 +165,8 @@ const SRS = (() => {
 
     due.sort((a, b) => a.c.due - b.c.due);
 
-    const remainingNew = Math.max(0, db.settings.newPerDay - db.daily.new);
-    const shuffledNew = shuffle(newCards).slice(0, remainingNew);
+    // Günlük kota kaldırıldı — her oturumda newPerDay kadar yeni kart
+    const shuffledNew = shuffle(newCards).slice(0, db.settings.newPerDay);
 
     const queue = [];
     due.forEach(x => queue.push({ phrase: x.p, isNew: false }));
@@ -221,10 +221,9 @@ const SRS = (() => {
         if (c.due <= t) dueCount++;
       }
     });
-    const remainingNew = Math.max(0, db.settings.newPerDay - db.daily.new);
     return {
       due: dueCount,
-      newAvailable: Math.min(newCount, remainingNew),
+      newAvailable: Math.min(newCount, db.settings.newPerDay),
       learned, total, byLevel,
       daily: db.daily,
       streak: db.stats.streak || 0,
