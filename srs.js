@@ -171,7 +171,9 @@ const SRS = (() => {
     const targetSize = limit || db.settings.newPerDay;
     const reviewItems = due.slice(0, targetSize).map(x => ({ phrase: x.p, isNew: false }));
     const remainingSlots = Math.max(0, targetSize - reviewItems.length);
-    const newItems = shuffle(newCards).slice(0, remainingSlots).map(p => ({ phrase: p, isNew: true }));
+    // Yeni kartları basitten karmaşığa sırala (cümle uzunluğu ≈ zorluk proxy)
+    const sortedNew = [...newCards].sort((a, b) => a.de.length - b.de.length);
+    const newItems = sortedNew.slice(0, remainingSlots).map(p => ({ phrase: p, isNew: true }));
 
     // Due ve yeni karıştır (intercale)
     const mixed = interleave(reviewItems, newItems);
