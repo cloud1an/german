@@ -214,7 +214,8 @@ const SRS = (() => {
       if (!c) {
         newCount++;
       } else {
-        if (c.state === "review") {
+        // "Çalışıldı": en az bir kez grade verilmiş kart (yeni değilse)
+        if (c.reps > 0) {
           byLevel[lvl].learned++;
           learned++;
         }
