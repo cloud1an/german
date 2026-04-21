@@ -334,6 +334,8 @@
     };
     const onSpace = (e) => { if (e.code === "Space") { e.preventDefault(); reveal(); } };
     document.addEventListener("keydown", onSpace);
+    // Oturum iptal edilirse / sonraki karta geçilirse listener'ı temizle
+    session._cleanup = () => document.removeEventListener("keydown", onSpace);
     tr.onclick = reveal;
     box.onclick = reveal;
   }

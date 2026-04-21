@@ -37,19 +37,25 @@ const SRS = (() => {
 
   function rollDayIfNeeded() {
     const t = todayStr();
-    if (db.daily.date !== t) {
-      const yesterday = new Date(Date.now() - DAY).toISOString().slice(0, 10);
-      if (db.stats.lastStudy === yesterday) {
-        db.stats.streak = (db.stats.streak || 0) + (db.daily.total > 0 ? 1 : 0);
-      } else if (db.daily.total > 0 && !db.stats.lastStudy) {
-        db.stats.streak = 1;
-      } else if (db.daily.total === 0) {
-        db.stats.streak = 0;
-      }
-      if (db.daily.total > 0) db.stats.lastStudy = db.daily.date;
-      db.daily = { date: t, new: 0, reviews: 0, correct: 0, total: 0 };
-      save();
+    if (db.daily.date === t) return;
+    const yesterday = new Date(Date.now() - DAY).toISOString().slice(0, 10);
+    // Eğer dünden daha eskiyse streak kopmuş
+    if (db.stats.lastStudy && db.stats.lastStudy < yesterday) {
+      db.stats.streak = 0;
     }
+    db.daily = { date: t, new: 0, reviews: 0, correct: 0, total: 0 };
+    save();
+  }
+
+  function getCurrentStreak() {
+    if (!db.stats.lastStudy) return 0;
+    const today = todayStr();
+    const yesterday = new Date(Date.now() - DAY).toISOString().slice(0, 10);
+    // Streak ancak bugün veya dün çalıştıysan geçerli
+    if (db.stats.lastStudy === today || db.stats.lastStudy === yesterday) {
+      return db.stats.streak || 0;
+    }
+    return 0;
   }
 
   function cardKey(p) { return `${p._level}::${p.de}`; }
@@ -138,11 +144,21 @@ const SRS = (() => {
     card.reps++;
     if (wasNew) db.daily.new++;
     db.daily.reviews++;
+    const wasFirstOfDay = db.daily.total === 0;
     db.daily.total++;
     if (quality > 0) db.daily.correct++;
     db.stats.totalReviews++;
+
+    // Günün ilk kartıysa streak mantığı
+    if (wasFirstOfDay) {
+      const yesterday = new Date(Date.now() - DAY).toISOString().slice(0, 10);
+      if (db.stats.lastStudy === yesterday) {
+        db.stats.streak = (db.stats.streak || 0) + 1;
+      } else if (db.stats.lastStudy !== db.daily.date) {
+        db.stats.streak = 1;
+      }
+    }
     db.stats.lastStudy = db.daily.date;
-    if (db.stats.streak === 0) db.stats.streak = 1;
     save();
   }
 
@@ -230,7 +246,7 @@ const SRS = (() => {
       newAvailable: Math.min(newCount, db.settings.newPerDay),
       learned, total, byLevel,
       daily: db.daily,
-      streak: db.stats.streak || 0,
+      streak: getCurrentStreak(),
       settings: db.settings
     };
   }

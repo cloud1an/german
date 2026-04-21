@@ -380,7 +380,11 @@ function renderReadingItem(item, idx) {
       b.onclick = () => {
         [...optsBox.children].forEach(c => c.disabled = true);
         if (oi === q.answer) b.classList.add("correct");
-        else { b.classList.add("wrong"); optsBox.children[q.answer].classList.add("correct"); }
+        else {
+          b.classList.add("wrong");
+          const correctEl = optsBox.children[q.answer];
+          if (correctEl) correctEl.classList.add("correct");
+        }
         const fb = document.createElement("div");
         fb.className = "exam-explain";
         fb.innerHTML = `<strong>${oi === q.answer ? "✓ Doğru" : "✗ Yanlış"}:</strong> ${q.explain || ""}`;
@@ -719,7 +723,10 @@ function setupProfile() {
   }
 
   submit.onclick = submitName;
-  input.addEventListener("keydown", (e) => { if (e.key === "Enter") submitName(); });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") submitName();
+    if (e.key === "Escape" && Profile.current()) modal.hidden = true;
+  });
   badge.onclick = () => showModal(true);
 
   refreshBadge();
