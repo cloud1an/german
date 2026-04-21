@@ -134,9 +134,21 @@ function renderPhrases() {
   }
   empty.hidden = true;
 
+  const GRADE_LABELS = ["Tekrar", "Zor", "İyi", "Kolay"];
+  const GRADE_CLASSES = ["grade-again", "grade-hard", "grade-good", "grade-easy"];
+
   list.forEach(p => {
     const card = document.createElement("article");
     card.className = "phrase-card";
+
+    const srsCard = SRS.getCard(p);
+    if (srsCard && srsCard.lastQuality !== undefined) {
+      const badge = document.createElement("span");
+      badge.className = "phrase-grade " + GRADE_CLASSES[srsCard.lastQuality];
+      badge.textContent = GRADE_LABELS[srsCard.lastQuality];
+      card.appendChild(badge);
+      card.classList.add("has-grade");
+    }
 
     const de = document.createElement("p");
     de.className = "phrase-de";

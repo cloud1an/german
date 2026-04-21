@@ -83,6 +83,7 @@ const SRS = (() => {
     rollDayIfNeeded();
     const t = now();
     const wasNew = card.state === "new";
+    card.lastQuality = quality;
 
     if (quality === 0) {
       if (card.state === "review") {
