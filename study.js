@@ -81,7 +81,9 @@
   }
 
   function clearSavedSession() {
+    // Hem namespaced hem bare (eski) anahtarları temizle
     localStorage.removeItem(Profile.namespace(SESSION_KEY));
+    localStorage.removeItem(SESSION_KEY);
   }
 
   function loadSavedSession() {
@@ -93,6 +95,8 @@
         .map(x => ({ phrase: findPhraseByKey(x.k), isNew: x.isNew }))
         .filter(x => x.phrase);
       if (queue.length === 0 || d.idx >= queue.length) return null;
+      // idx=0 = henüz hiçbir kart yapılmadı, gerçek bir yarım oturum değil
+      if (d.idx === 0) return null;
       return { queue, idx: d.idx, stats: d.stats, levels: d.levels, startedAt: d.startedAt };
     } catch (e) { return null; }
   }
@@ -666,6 +670,18 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     if (!document.getElementById("study-view")) return;
+    // Sayfa açılışında: eğer saved session idx=0 ise (henüz grade yok), temizle
+    try {
+      const raw = localStorage.getItem(Profile.namespace(SESSION_KEY));
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (!d.idx || d.idx === 0) clearSavedSession();
+      }
+      // Bare key (isimsiz) hâlâ varsa da temizle — eski kalıntı
+      if (Profile.current() && localStorage.getItem(SESSION_KEY)) {
+        localStorage.removeItem(SESSION_KEY);
+      }
+    } catch (e) { clearSavedSession(); }
     initEvents();
     renderHome();
     if ("speechSynthesis" in window) {
