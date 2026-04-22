@@ -383,16 +383,16 @@
     const check = () => {
       if (session.answered) return;
       const ans = input.value.trim();
-      const isCorrect = normalizeAnswer(ans) === normalizeAnswer(cloze.word);
+      const result = checkAnswer(ans, cloze.word);
       session.answered = true;
       session.stats.total++;
-      if (isCorrect) session.stats.correct++;
+      if (result.correct) session.stats.correct++;
       input.disabled = true;
-      input.classList.add(isCorrect ? "correct" : "wrong");
+      input.classList.add(result.correct ? (result.typo ? "correct-typo" : "correct") : "wrong");
       sentence.innerHTML = words.map((w, i) =>
-        i === cloze.index ? `<span class="cloze-filled ${isCorrect ? "ok" : "bad"}">${w}</span>` : w
+        i === cloze.index ? `<span class="cloze-filled ${result.correct ? "ok" : "bad"}">${w}</span>` : w
       ).join(" ");
-      showAnswer(p, isCorrect);
+      showAnswer(p, result.correct, result.typo);
     };
     submit.onclick = check;
     input.addEventListener("keydown", (e) => {
@@ -494,13 +494,13 @@
     const check = () => {
       if (session.answered) return;
       const ans = input.value.trim();
-      const isCorrect = normalizeAnswer(ans) === normalizeAnswer(p.de);
+      const result = checkAnswer(ans, p.de);
       session.answered = true;
       session.stats.total++;
-      if (isCorrect) session.stats.correct++;
+      if (result.correct) session.stats.correct++;
       input.disabled = true;
-      input.classList.add(isCorrect ? "correct" : "wrong");
-      showAnswer(p, isCorrect);
+      input.classList.add(result.correct ? (result.typo ? "correct-typo" : "correct") : "wrong");
+      showAnswer(p, result.correct, result.typo);
     };
     submit.onclick = check;
     input.addEventListener("keydown", (e) => {
@@ -538,13 +538,13 @@
     const check = () => {
       if (session.answered) return;
       const ans = input.value.trim();
-      const isCorrect = normalizeAnswer(ans) === normalizeAnswer(p.de);
+      const result = checkAnswer(ans, p.de);
       session.answered = true;
       session.stats.total++;
-      if (isCorrect) session.stats.correct++;
+      if (result.correct) session.stats.correct++;
       input.disabled = true;
-      input.classList.add(isCorrect ? "correct" : "wrong");
-      showAnswer(p, isCorrect);
+      input.classList.add(result.correct ? (result.typo ? "correct-typo" : "correct") : "wrong");
+      showAnswer(p, result.correct, result.typo);
     };
     submit.onclick = check;
     input.addEventListener("keydown", (e) => {
@@ -561,12 +561,53 @@
       .trim();
   }
 
-  function showAnswer(p, isCorrect) {
+  // Levenshtein edit distance — iki string arasındaki minimum değişiklik sayısı
+  function levenshtein(a, b) {
+    if (a === b) return 0;
+    if (!a.length) return b.length;
+    if (!b.length) return a.length;
+    const v0 = new Array(b.length + 1);
+    const v1 = new Array(b.length + 1);
+    for (let i = 0; i <= b.length; i++) v0[i] = i;
+    for (let i = 0; i < a.length; i++) {
+      v1[0] = i + 1;
+      for (let j = 0; j < b.length; j++) {
+        const cost = a[i] === b[j] ? 0 : 1;
+        v1[j + 1] = Math.min(v1[j] + 1, v0[j + 1] + 1, v0[j] + cost);
+      }
+      for (let j = 0; j <= b.length; j++) v0[j] = v1[j];
+    }
+    return v1[b.length];
+  }
+
+  // Uzunluğa göre kabul edilebilir typo sayısı
+  function maxTypos(len) {
+    if (len < 5) return 0;       // çok kısa (der/dem/das): tam doğru olmalı
+    if (len < 10) return 1;      // 5–9 harf: 1 typo
+    if (len < 18) return 2;      // orta cümle: 2 typo
+    return 3;                    // uzun cümle: 3 typo
+  }
+
+  // Cevabı kontrol et: {correct, typo, distance, normalized, normalizedCorrect}
+  function checkAnswer(userAns, correctText) {
+    const u = normalizeAnswer(userAns);
+    const c = normalizeAnswer(correctText);
+    if (u === c) return { correct: true, typo: false, distance: 0 };
+    const d = levenshtein(u, c);
+    const max = maxTypos(c.length);
+    if (d > 0 && d <= max) return { correct: true, typo: true, distance: d };
+    return { correct: false, typo: false, distance: d };
+  }
+
+  function showAnswer(p, isCorrect, hasTypo) {
     const feedback = document.createElement("div");
-    feedback.className = "feedback " + (isCorrect ? "ok" : "bad");
+    feedback.className = "feedback " + (isCorrect ? (hasTypo ? "ok-typo" : "ok") : "bad");
+    const icon = isCorrect ? (hasTypo ? "≈" : "✓") : "✗";
+    const typoNote = hasTypo ? `<div class="feedback-typo">✎ Yazım hatası var, cevap kabul edildi</div>` : "";
     feedback.innerHTML = `
-      <div class="feedback-icon">${isCorrect ? "✓" : "✗"}</div>
+      <div class="feedback-icon">${icon}</div>
       <div>
+        ${typoNote}
         <div class="feedback-de">${p.de}</div>
         <div class="feedback-tr">${p.tr}</div>
       </div>
